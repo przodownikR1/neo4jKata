@@ -1,0 +1,32 @@
+= Neo4j
+
+Baza Nosql stworzona w celu maksymalizacji zarządzania, przechowywania, przechodzenia, budowania relacji grafowych
+
+== Nodes
+
+Grafy
+
+== Relationships
+
+Powiązania pomiędzy grafami
+
+== Properties
+
+Właściwości
+
+
+== Cypher
+
+=== Create Node
+
+----
+CREATE (ee:Person { name: "przodownik", from: "poland", rank: 12 })
+----
+
+
+
+=== Find node
+
+----
+MATCH (ee:Person) WHERE ee.name = "przodownik" RETURN ee;
+----
