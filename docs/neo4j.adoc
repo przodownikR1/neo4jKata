@@ -1,24 +1,124 @@
 = Neo4j
+:docInfo1
+:numbered:
+:icons: font
+:pagenums:
+:imagesdir: img
+:iconsdir: ./icons
+:stylesdir: ./styles
+:scriptsdir: ./js
+
+:image-link: https://pbs.twimg.com/profile_images/425289501980639233/tUWf7KiC.jpeg
+ifndef::sourcedir[:sourcedir: ./src/main/java/]
+ifndef::resourcedir[:resourcedir: ./src/main/resources/]
+ifndef::imgsdir[:imgsdir: ./../img]
+:source-highlighter: coderay
+
+
+
+== Community Edition: 
+
+** pełna funkcjonalność 
+
+== Enterprise Edition
+
+** clustering (high availability,load balancing)
+** zaawansowany monitoring
+** zaawansowany caching 
+** online backups
+
 
 Baza Nosql stworzona w celu maksymalizacji zarządzania, przechowywania, przechodzenia, budowania relacji grafowych
+
+** pełne wsparcie dla ACID
+
+** trawersowanie zamiast kosztowych operacji JOIN
+
+** dynamiznm
+
+
+== Odpalanie 
+
+./neo4j start
+
+link : http://localhost:7474/
 
 == Nodes
 
 Grafy
 
+** gromadzenie informacji
+
+
 == Relationships
 
 Powiązania pomiędzy grafami
 
+** powiązania między grafami
+
+** join-like z relacyjnych baz danych
+
+=== Start
+
+=== End
+
+=== Direction
+
 == Properties
 
-Właściwości
+Właściwości zarówno dla grafów jak i powiązań.
+
+** Numeric
+
+** String
+
+** Boolean
+
+...
+
+ 	
+WARNING: NULL is not a valid property value.
+
+
+== Labels
+
+** grupowanie węzłów
+
+
+
+== Traversal
+
+Nawigacja pomiędzy węzłami w celu szukania ścieżki
+
+** szybkość nie zależy od kierunku
+
+== Paths
+
+A path is one or more nodes with connecting relationships, typically retrieved as a query or traversal result.
+
+== Indexes
+
+Performance is gained by creating indexes, which improve the speed of looking up nodes in the database.
+
+== Schema
+
+Neo4j is a schema-optional graph database.
 
 
 == Cypher
 
+=== Deklaratywność
+
+Separuje problemy od sposobu ich rozwiązania. Pozwala to uzyskać czytelność zapytań nawet dla ludzi nie będących programistami Cyphera.
+
+
+
+
 === Create Node
 
+** analogia do 'sql insert'
+
+[source,cypher]
 ----
 CREATE (ee:Person { name: "przodownik", from: "poland", rank: 12 })
 ----
@@ -27,6 +127,140 @@ CREATE (ee:Person { name: "przodownik", from: "poland", rank: 12 })
 
 === Find node
 
+** analogia do 'sql join'
+
+[source,cypher]
 ----
 MATCH (ee:Person) WHERE ee.name = "przodownik" RETURN ee;
 ----
+
+
+=== Set
+
+** analogia do 'sql update'
+
+[source,sql]
+----
+UPDATE User SET fullname="slawek borowiec" WHERE username="przodownik"
+----
+
+[source,cypher]
+----
+MATCH (u:User {username: "przodownik"} ) SET u.fullname = 'slawek borowiec' RETURN u 
+----
+
+== Ograniczenia 
+
+** Nawadanie 
+
+
+[source,sql]
+----
+CREATE CONSTRAINT ON (business:Business) ASSERT business.businessname IS UNIQUE
+----
+
+** Zdejmowanie 
+
+
+[source,cypher]
+----
+DROP CONSTRAINT ON (business:Business) ASSERT business.businessname IS UNIQUE
+----
+
+== Select 
+
+
+[source,sql]
+----
+SELECT * FROM User WHERE username = "przodownik"
+----
+
+
+[source,cypher]
+----
+START user=node:User(username="przodownik") RETURN user
+----
+
+WARNING: W nowych wersjach Neo4j używaj MATCH zamiast START ze względów wydajnościowych odczytu.
+
+[source,sql]
+----
+SELECT fullname, email, username FROM User WHERE username = "przodownik" 
+----
+ 
+[source,cypher]
+----
+MATCH (u:User {username: "przodownik"} ) RETURN u.fullname, u.email, u.username
+----
+
+== DELETE
+
+[source,sql]
+----
+DELETE FROM User WHERE username="przodownik" 
+----
+
+[source,cypher]
+----
+MATCH (u:User {username: "przodownik"} ) DELETE u
+----
+
+Delete relationship 
+
+[source,cypher]
+----
+MATCH (u:User {username: "przodownik"} )-[r]-() DELETE u
+----
+
+== Return
+
+[source,cypher]
+----
+
+MATCH (u:User {username: "przodownik"} ) RETURN u 
+
+MATCH (u:User {username: "przodownik"} )  RETURN u.username AS uname 
+
+
+RETURN All Elements Found in the MATCH
+MATCH (u:User {username: "przodownik"} ) –[r]-()
+RETURN u,r
+
+----
+
+
+== WITH, ORDER BY, SKIP, and LIMIT
+
+== Kiedy używać  ?
+
+=== Skomplikowane zapytania
+
+==== Cartesian
+
+
+== Skalowalność 
+
+** scalability
+
+** high availability
+
+** fault-tolerance
+
+image::clusterNeo4j.png[]
+
+
+== Import danych z zewnętrznych źródeł
+
+
+== Recommendations
+
+== Visualization
+
+
+== Przykłady 
+
+http://gist.neo4j.org/[gists]
+
+
+
+
