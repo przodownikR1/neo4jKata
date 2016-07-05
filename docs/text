@@ -1,0 +1,67 @@
+mongodb {
+collection =>
+database =>
+uri =>
+}
+
+
+
+output {
+stdout {}
+}
+
+
+rabbitmq {
+exchange =>
+exchange_type =>
+host =>
+}
+
+
+
+email {
+to => "abc@example.com"
+}
+
+
+
+file
+{
+path = > "path/to/file"
+}
+
+csv {
+fields => ["date","open_price","close_price"]
+path => "/path/to/file.csv"
+}
+
+
+=====GROK
+
+%{HOSTNAME:host_name}
+
+54.3.245.1 GET /index.html 14562 0.056
+The grok pattern would be represented as:
+%{IP:client_ip} %{WORD: request_method } %{URIPATHPARAM:uri_path} %{NUMBER:bytes_transferred} %{NUMBER:duration}
+
+
+
+
+input {
+redis {
+host => "10.0.0.1"
+type => "redis-input"
+data_type => "list"
+key => "logstash"
+}
+}
+output {
+stdout { }
+elasticsearch {
+cluster => "logstash"
+}
+}
+
+
+
+

@@ -1,0 +1,44 @@
+output {
+    redis {
+        host => localhost
+        data_type => list
+        key => logstash
+    }
+    stdout {
+        codec => rubydebug
+    }
+}
+
+
+
+input {
+  tcp {
+    port => 5514
+    type => syslog
+  }
+  udp {
+    port => 5514
+    type => syslog
+  }
+}
+
+filter {
+  grok {
+    match => ["message", "%{HAPROXYHTTP}"]
+    remove_field => ["message"]
+  }
+}
+
+
+input {
+  redis {
+    host => "redis"
+    port => 6379
+    threads => 16
+    key => "logstash"
+    data_type => "list"
+    codec => json
+    batch_count => 10000
+  }
+}
+

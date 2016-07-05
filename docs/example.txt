@@ -1,0 +1,101 @@
+filter {
+  grok {
+    match => {
+      "message" => "%{HTTPDATE:timestamp} %{IP:ip} <%{DATA:msg}>"
+    }
+  }
+}
+
+input {
+	stdin { }
+}
+
+filter {
+	grok {
+		match => {
+			"mesasge" => '%{IPORHOST:clientip}'
+		}
+	}
+
+}
+
+output {
+	stdout { codec => rubydebug }
+	elasticsearch {
+		hosts => "localhost"
+	}
+}
+
+filter {
+   grok {
+     match => [ "message", "^%{TIMESTAMP_ISO8601:date},%{NUMBER:number}%{DATA:msg}" ]
+   }
+}
+
+
+
+
+filter {
+	grok {
+		match => ["message", "%{WORD:firstname} %{WORD:lastname} %{NUMBER:age}"]
+	}
+}
+
+
+filter {
+	grok {
+		match => { "message" => "%{COMMONAPACHELOG}" }
+	}
+	date {
+		match => [ "timestamp" , "dd/MMM/yyyy:HH:mm:ss Z" ]
+	}
+}
+
+
+
+filter {
+  multiline {
+    pattern => "^%{LOGLEVEL}"
+    negate => true
+    what => "previous"
+  }
+  grok {
+    patterns_dir => "./patterns"
+    match => { "message" => "%{LOGLEVEL:level}%{SPACE} %{TIMESTAMP_ISO8601:timestamp}  %{GREEDY_MULTILINE:log}" }
+  }
+
+  date {
+    match => [ "timestamp" , "yyyy-MM-dd HH:mm:ss.SSS" ]
+  }
+  mutate {
+    remove_field => [ "timestamp", "path", "message" ]
+  }
+}
+
+grok {
+    match => [ "message", "%{TIMESTAMP_ISO8601:timestamp_log} %{THREAD:thread} %{LOGLEVEL:log_level}  %{JAVACLASS:logger} %{JMXSERVICEURI:server} %{STATEMENTMETRIC:event_type} %{WORD:field1} %{TIMESTAMP_ISO8601:event_timestamp} %{WORD:field2} %{WORD:statement_name} %{WORD:field3} %{NONNEGINT:cpuTime:int} %{WORD:field4} %{NONNEGINT:wallTime:int} %{WORD:field5} %{NONNEGINT:numInput:int} %{WORD:field6} %{NONNEGINT:numOutputRStream:int} %{WORD:field7} %{NONNEGINT:numOutputIStream:int}" ]
+
+
+
+
+ grok {
+      match => { "message" => "%{IPORHOST:client_ip} %{USER:ident} %{USER:auth} \[%{HTTPDATE:request_time}\] %{DATA:thread_name} \"(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})\" %{NUMBER:response} (?:%{NUMBER:bytes}|-) (?:%{NUMBER:mills}|-)" }
+    }
+    date {
+      match => [ "request_time" , "dd/MMM/yyyy:HH:mm:ss Z" ]
+    }
+    geoip {
+      source => "client_ip"
+      add_tag => ["geoip"]
+    }
+    urldecode {
+        all_fields => true
+    }
+
+
+
+
+
+
+
+
